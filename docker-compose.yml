@@ -1,0 +1,10 @@
+services:
+  lucee:
+    image: lucee/lucee:6.1
+    container_name: lucee
+    volumes:
+      - ./example-password.txt:/opt/lucee/server/lucee-server/context/password.txt
+      - ./component:/var/www/component
+      - ./test:/var/www
+    ports: 
+      - "8888:8888"

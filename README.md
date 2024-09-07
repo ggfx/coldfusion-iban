@@ -1,4 +1,11 @@
-coldfusion-iban
-===============
+# coldfusion-iban
 
-CFC-Component for converting local bank account number and institute identifier to the international bank account number
+Coldfusion component for validating international bank account number (iban) and converting local bank account number and bank code/institute identifier to the iban.
+
+### Demo / Test
+
+To get a demonstration, just clone this repo and run:
+```sh
+docker compose up -d
+```
+Then open http://localhost:8888 in your browser.
