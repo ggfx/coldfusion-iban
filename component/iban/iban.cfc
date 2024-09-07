@@ -27,8 +27,8 @@
 	Main Functions
 --->
 
-	<cffunction name="create_iban"
-		access="public" output="false" hint="Main function" returntype="any">
+	<cffunction access="public" returntype="any" name="create_iban"
+		output="false" hint="Main function" >
 		<cfargument name="ban" type="string" required="true" hint="Bank Account Number">
 		<cfargument name="iid" type="string" required="true" hint="Institute Identifier">
 		<cfargument name="return_type" type="string" default="struct" hint="can be: struct, else returns only the iban">
@@ -37,7 +37,7 @@
 			var checksum = 0;
 			var pz = 0;
 			var iban = 0;
-			if (isStruct(bban)) {
+			if (isStruct(bban) && structKeyExists(bban, "error") && bban.error IS true) {
 				// Error occured
 				return bban;
 			} else {
@@ -48,19 +48,18 @@
 				if (arguments.return_type EQ "struct") {
 					return local;
 				} else {
-					return local.iban;
+					return iban;
 				}
 			}
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="validate_iban"
-		access="public" output="false" hint="validate iban, the result for a valid iban has to be 1">
+	<cffunction access="public" returntype="any" name="validate_iban"
+		output="false" hint="validate iban, the result for a valid iban has to be 1">
 		<cfargument name="iban" type="string" required="true">
 		<cfscript>
-			var local = structNew();
-			local.checksum = right(arguments.iban,len(arguments.iban)-4) & left(arguments.iban,4);
-			return this.create_pz(local.checksum,true);
+			var checksum = right(arguments.iban,len(arguments.iban)-4) & left(arguments.iban,4);
+			return this.create_pz(checksum,true);
 		</cfscript>
 	</cffunction>
 
@@ -68,31 +67,31 @@
 	Helper functions
 --->
 
-	<cffunction name="bban_cleaner"
-		access="package" output="false" hint="removes special chars">
+	<cffunction access="package" returntype="string" name="bban_cleaner"
+		output="false" hint="removes special chars">
 		<cfargument name="bban_dirty" type="string" required="true">
 		<cfscript>
 			return reReplace(ucase(arguments.bban_dirty),"[^A-Z0-9]","","all");
 		</cfscript>
 	</cffunction>
 
-	<cffunction name="create_pz"
-		access="public" output="false" hint="either creats error checking number or validates checksum">
+	<cffunction access="public" returntype="any" name="create_pz"
+		output="false" hint="either creats error checking number or validates checksum">
 		<cfargument name="checksum" type="string" required="true">
 		<cfargument name="validate" type="boolean" default="false">
 		<cfscript>
-			var local = structNew();
-			local.alpha_list = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
-			local.num_list = "10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36";
-			local.modulo = createObject("java", "java.math.BigInteger").valueOf("97");
+			var alpha_list = "A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
+			var num_list = "10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36";
+			var modulo = createObject("java", "java.math.BigInteger").valueOf("97");
 
-			local.checksum = replaceList(ucase(arguments.checksum),local.alpha_list,local.num_list);
-			local.checkbig = createObject("java", "java.math.BigInteger").init(JavaCast("String", local.checksum));
+			var checksum = replaceList(ucase(arguments.checksum), alpha_list, num_list);
+			var checkbig = createObject("java", "java.math.BigInteger").init(JavaCast("String", checksum));
+			var pz = 0;
 			if (arguments.validate IS true) {
-				return local.checkbig.remainder(modulo);
+				return checkbig.remainder(modulo);
 			} else {
-				local.pz = numberFormat(98 - local.checkbig.remainder(modulo),"00");
-				return local.pz;
+				pz = numberFormat(98 - checkbig.remainder(modulo),"00");
+				return pz;
 			}
 		</cfscript>
 	</cffunction>

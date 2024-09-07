@@ -5,7 +5,7 @@
     param name="form.locale" default="DE";
     if (structKeyExists(form,"convert")
         && len(form.ktnr) > 0
-        && len(form.blz) == 8) {
+        && len(form.blz) > 0) {
         obj_iban = new component.iban.de();
         result = obj_iban.create_iban(form.ktnr,form.blz);
         if (structKeyExists(result, "error")) {
@@ -19,7 +19,7 @@
         && len(form.iban) > 0) {
         obj_iban = new component.iban.iban();
         validation = ( obj_iban.validate_iban(form.iban) == 1 ) ? "valid" : "invalid";
-        writeOutput('<input hx-swap="outerHTML" hx-target="this" type="text" class="form-control is-#validation#" name="iban" id="iban" placeholder="XY00123456781234567890" value="#htmlEditFormat(form.iban)#" required/>');
+        writeOutput('<input type="text" class="form-control is-#validation#" name="iban" id="iban" placeholder="XY00123456781234567890" value="#htmlEditFormat(form.iban)#" required/>');
         abort;
     }
 </cfscript>

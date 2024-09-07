@@ -9,3 +9,7 @@ To get a demonstration, just clone this repo and run:
 docker compose up -d
 ```
 Then open http://localhost:8888 in your browser.
+
+### Conversion
+
+Conversion is currently available only for german bank account numbers.
